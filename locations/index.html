@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Locations</title>
+	<link rel="stylesheet" href="./node_modules/leaflet/dist/leaflet.css" crossorigin=""/>
+	<style>
+	body {
+		margin:0;
+		padding:0;
+		height:100%;
+	}
+	#map {
+		width: 100%;
+		height: 800px;
+		margin:0 auto;
+		padding:0;
+		border: 0;
+	}
+	</style>
+</head>
+<body>
+
+<div id="map"></div>
+
+
+<script src="node_modules/leaflet/dist/leaflet.js"></script>
+<script type="text/javascript">
+
+// see https://codepen.io/KryptoniteDove/post/load-json-file-locally-using-pure-javascript
+function loadJSON(callback) {   
+	var xobj = new XMLHttpRequest();
+	    xobj.overrideMimeType("application/json");
+	xobj.open('GET', 'my_data.json', true); // Replace 'my_data' with the path to your file
+	xobj.onreadystatechange = function () {
+	      if (xobj.readyState == 4 && xobj.status == "200") {
+	        // Required use of an anonymous callback as .open will NOT return a value but simply returns undefined in asynchronous mode
+	        callback(xobj.responseText);
+	      }
+	};
+	xobj.send(null);  
+}
+
+
+loadJSON(function(response) {
+  // Parse JSON string into object
+    var locations = JSON.parse(response);
+
+	var zoom_level = 12,
+		minZoom = 3,
+		maxZoom = 17;
+
+
+	var tiles = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+			maxZoom: maxZoom,
+			minZoom: minZoom,
+			attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+		});
+
+	var latlng = L.latLng(65.015615,25.335855);
+
+	var mymap = L.map('map', {
+		center: latlng,
+		zoom: zoom_level,
+		layers: [tiles]
+	});
+
+
+	locations.forEach(function (loc) {
+		// L.marker(loc).addTo(mymap);
+		L.circle(loc, 10, {
+			color: 'red',
+			fillColor: '#f03',
+			fillOpacity: 0.2,
+		}).addTo(mymap);
+	});
+
+});
+
+</script>
+
+</body>
+</html>
